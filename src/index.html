@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WebSocket Test</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+
+<body>
+    <h1>WebSocket Client</h1>
+    <script>
+        const socket = io("ws://localhost:3000");
+
+        socket.on("connect", () => {
+            console.log("Connected:", socket.id);
+
+            socket.emit("process-files", {
+                urls: [
+                    "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",                    
+                    "https://jsonplaceholder.typicode.com/posts/1",
+                    "https://people.sc.fsu.edu/~jburkardt/data/csv/addresses.csv",
+                    "https://www.orimi.com/pdf-test.pdf",
+                    "https://jsonplaceholder.typicode.com/comments"
+                ],
+            });
+        });
+
+        socket.on("file-status", (data) => {
+            console.log("File status:", data);
+        });
+
+        socket.on("connect_error", (err) => {
+            console.error("Connection error:", err.message);
+        });
+    </script>
+</body>
+
+</html>
