@@ -5,4 +5,4 @@ import { FileProcessingGateway } from './file-processing/file-processing.gateway
   imports: [],
   providers: [FileProcessingGateway],
 })
-export class AppModule {}
+export class AppModule { }
