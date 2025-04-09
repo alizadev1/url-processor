@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileProcessingGateway } from './file-processing.gateway';
+import { FileProcessingGateway } from './gateway/file-processing.gateway';
 
 describe('FileProcessingGateway', () => {
   let gateway: FileProcessingGateway;

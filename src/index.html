@@ -26,12 +26,16 @@
         });
 
         socket.on("file-status", (data) => {
-            console.log("File status:", data);
-        });
+                console.log("File status:", data);
+            });
 
-        socket.on("connect_error", (err) => {
-            console.error("Connection error:", err.message);
-        });
+            socket.on("file-progress", (data) => {
+                console.log(`Progress [${data.uuid}]: ${data.progress}% (${data.phase})`);
+            });
+
+            socket.on("connect_error", (err) => {
+                console.error("Connection error:", err.message);
+            });
     </script>
 </body>
 
