@@ -4,6 +4,7 @@
 <head>
     <title>WebSocket Test</title>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uuid@8.3.2/dist/umd/uuid.min.js"></script>
 </head>
 
 <body>
@@ -11,31 +12,33 @@
     <script>
         const socket = io("ws://localhost:3000");
 
+        const files = [
+            "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+            "https://jsonplaceholder.typicode.com/posts/1",
+            "https://people.sc.fsu.edu/~jburkardt/data/csv/addresses.csv",
+            "https://www.orimi.com/pdf-test.pdf",
+            "https://jsonplaceholder.typicode.com/comments"
+        ].map((url) => ({
+            url,
+            uuid: uuid.v4(),
+        }));
+
         socket.on("connect", () => {
             console.log("Connected:", socket.id);
-
-            socket.emit("process-files", {
-                urls: [
-                    "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",                    
-                    "https://jsonplaceholder.typicode.com/posts/1",
-                    "https://people.sc.fsu.edu/~jburkardt/data/csv/addresses.csv",
-                    "https://www.orimi.com/pdf-test.pdf",
-                    "https://jsonplaceholder.typicode.com/comments"
-                ],
-            });
+            socket.emit("process-files", { files });
         });
 
         socket.on("file-status", (data) => {
-                console.log("File status:", data);
-            });
+            console.log("File status:", data);
+        });
 
-            socket.on("file-progress", (data) => {
-                console.log(`Progress [${data.uuid}]: ${data.progress}% (${data.phase})`);
-            });
+        socket.on("file-progress", (data) => {
+            console.log(`Progress [${data.uuid}]: ${data.progress}% (${data.phase})`);
+        });
 
-            socket.on("connect_error", (err) => {
-                console.error("Connection error:", err.message);
-            });
+        socket.on("connect_error", (err) => {
+            console.error("Connection error:", err.message);
+        });
     </script>
 </body>
 
