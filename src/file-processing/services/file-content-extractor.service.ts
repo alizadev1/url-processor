@@ -7,7 +7,6 @@ import { Socket } from 'socket.io';
 export class FileContentExtractorService {
   async extractFileContent(
     fileBuffer: Buffer,
-    url: string,
     type: string,
     uuid: string,
     client: Socket,
@@ -39,7 +38,6 @@ export class FileContentExtractorService {
         );
       });
     }
-
     throw new Error('Unsupported file type: ' + type);
   }
 }

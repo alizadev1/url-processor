@@ -8,7 +8,6 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { v4 as uuidv4 } from 'uuid';
 import { FileDownloadService } from '../services/file-download.service';
 import { FileTypeService } from '../services/file-type.service';
 import { FileContentExtractorService } from '../services/file-content-extractor.service';
@@ -35,41 +34,28 @@ export class FileProcessingGateway
 
   @SubscribeMessage('process-files')
   async processFiles(
-    @MessageBody() data: { urls: string[] },
+    @MessageBody() data: { files: { url: string; uuid: string }[] },
     @ConnectedSocket() client: Socket,
   ) {
-    const total = data.urls.length;
     const fileContents: Record<string, any> = {};
-    const fileMap: Record<string, string> = {};
 
-    const urlWithUUIDs = data.urls.map((url) => {
-      const uuid = uuidv4();
-      fileMap[uuid] = url;
-      return { url, uuid };
-    });
-
-    for (let index = 0; index < total; index++) {
-      const { url, uuid } = urlWithUUIDs[index];
-
+    for (const { url, uuid } of data.files) {
       try {
         const fileType = await this.fileTypeService.getFileType(url);
-        if (!fileType) {
-          throw new Error('Unsupported file type');
-        }
+        if (!fileType) throw new Error('Unsupported file type');
+
         const fileBuffer = await this.fileDownloadService.downloadFileWithProgress(
           url,
           uuid,
           client,
         );
 
-        const content =
-          await this.fileContentExtractorService.extractFileContent(
-            fileBuffer,
-            url,
-            fileType,
-            uuid,
-            client,
-          );
+        const content = await this.fileContentExtractorService.extractFileContent(
+          fileBuffer,
+          url,
+          fileType,
+          client,
+        );
 
         fileContents[url] = content;
 
@@ -90,7 +76,6 @@ export class FileProcessingGateway
         });
       }
     }
-
     console.log('Extracted file contents:', Object.keys(fileContents));
   }
 }
